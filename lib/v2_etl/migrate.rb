@@ -35,6 +35,7 @@ module V2ETL
       rename_table :submissions, :v2_submissions
       rename_table :submission_test_runs, :v2_submission_test_runs
       rename_table :notifications, :v2_notifications
+      rename_table :discussion_posts, :v2_discussion_posts
 
       # Remove duplicate foreign key on sideways table
       execute("ALTER TABLE v2_submission_test_runs DROP FOREIGN KEY fk_rails_477e62a0ba")
@@ -76,8 +77,6 @@ module V2ETL
     def migrate_tables!
       migrate_solution_mentor_discussions
 
-      migrate_discussion_posts_to_solution_mentor_discussion_posts
-
       migrate_exercises
       migrate_friendly_id_slugs
       migrate_iterations
@@ -93,15 +92,15 @@ module V2ETL
     def post_migrate_tables!
       # Some tables need creating after the migrations have occurred
       # in order for foreign keys to be there.
-
-      # TODO: Re-enable
       create_mentor_testimonials
+      create_solution_mentor_discussion_posts
     end
 
     def migrate_data!
       # Now do lots of data migrations
       # Each of these should have a class associated with
       # it and an equivlent test class
+      process_solution_mentor_discussion_posts
 
       # TODO: Populate users.github_usernames via GH API
 
@@ -114,6 +113,8 @@ module V2ETL
         handle_create(meth)
       elsif meth.starts_with?("migrate_")
         handle_migrate(meth)
+      elsif meth.starts_with?("process_")
+        handle_process(meth)
       else
         super(meth)
       end
@@ -131,6 +132,13 @@ module V2ETL
       require file
 
       "v2_e_t_l/table_migrations/#{meth}".camelize.constantize.()
+    end
+
+    def handle_process(meth)
+      file = Dir[Rails.root.join("lib/v2_etl/data_processors/#{meth}.rb")].first
+      require file
+
+      "v2_e_t_l/data_processors/#{meth}".camelize.constantize.()
     end
 
     def migrate_friendly_id_slugs

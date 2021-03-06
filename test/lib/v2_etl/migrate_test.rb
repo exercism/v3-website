@@ -39,5 +39,7 @@ module V2ETL
         end
       end
     end
+
+    def test_iterations_have_submissions_created; end
   end
 end
