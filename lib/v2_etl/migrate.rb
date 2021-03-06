@@ -124,9 +124,6 @@ module V2ETL
       require file
 
       meth.to_s.camelize.constantize.new.change
-      # rescue ActiveRecord::StatementInvalid
-      # TODO: Remove this
-      # Failed
     end
 
     def handle_migrate(meth)
@@ -156,13 +153,14 @@ module V2ETL
 
     private
     delegate :rename_table, :execute, to: :connection
-    def connection
-      ActiveRecord::Base.connection
-    end
 
     def reload!
       # Reload everything
       ActiveRecord::Base.descendants.each(&:reset_column_information)
+    end
+
+    def connection
+      ActiveRecord::Base.connection
     end
   end
 end
