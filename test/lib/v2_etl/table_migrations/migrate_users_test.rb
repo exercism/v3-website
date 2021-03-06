@@ -1,7 +1,7 @@
 require "test_helper"
-require_relative '../../../lib/v2_etl/migrate'
+require_relative '../../../../lib/v2_etl/table_migrations/migrate_users'
 
-module V2ETL
+module V2ETL::TableMigrations
   class MigrateTest < ActiveSupport::TestCase
     self.use_transactional_tests = false
 
@@ -15,13 +15,11 @@ module V2ETL
       `mv db/schema.v3.rb db/schema.rb`
     end
 
-    def test_runs_cleanly
-      V2ETL::Migrate.()
+    def test_migration
+      V2ETL::TableMigrations::MigrateUsers.()
 
-      # Check we can still create all the factories
-      FactoryBot.factories.map(&:name).each do |factory|
-        create factory
-      end
+      # Test we can still create a user
+      create :user
     end
   end
 end
