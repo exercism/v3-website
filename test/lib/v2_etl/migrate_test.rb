@@ -20,7 +20,11 @@ module V2ETL
 
       # Check we can still create all the factories
       FactoryBot.factories.map(&:name).each do |factory|
-        create factory
+        # Run each in isolation
+        ActiveRecord::Base.transaction do
+          create factory
+          raise ActiveRecord::Rollback
+        end
       end
     end
   end

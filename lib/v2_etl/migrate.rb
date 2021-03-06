@@ -6,6 +6,8 @@ module V2ETL
     include Mandate
 
     def call
+      return if Rails.env.production?
+
       create_tables
       migrate_tables
       migrate_data
