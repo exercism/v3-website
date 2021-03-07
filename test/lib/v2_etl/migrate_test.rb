@@ -25,7 +25,21 @@ module V2ETL
       `cp db/schema.v3.rb db/schema.rb`
     end
 
+    def test_everything
+      V2ETL::Migrate.()
+
+      # Check we can still create all the factories
+      FactoryBot.factories.map(&:name).each do |factory|
+        # Run each in isolation
+        ActiveRecord::Base.transaction do
+          create factory
+          raise ActiveRecord::Rollback
+        end
+      end
+    end
+
     def test_structural_changes_run_cleanly
+      skip
       cmd = V2ETL::Migrate.new
       cmd.stubs(:migrate_data!)
       cmd.()
@@ -39,7 +53,5 @@ module V2ETL
         end
       end
     end
-
-    def test_iterations_have_submissions_created; end
   end
 end

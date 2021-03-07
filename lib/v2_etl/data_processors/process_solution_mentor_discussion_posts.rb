@@ -1,32 +1,50 @@
-require_relative "table_migration"
-
 module V2ETL
   module DataProcessors
     class ProcessSolutionMentorDiscussionPosts
       include Mandate
 
       def call
-        # Migrate from the old table to the new
-        # ActiveRecord::Base.connection.execute(<<-SQL)
-        # INSERT INTO solution_mentor_discussion_posts (
-        #   uuid,
-        #   iteration_id,
-        #   discussion_id,
-        #   user_id,
-        #   content_markdown, content_html,
-        #   seen_by_student, seen_by_mentor,
-        #   created_at, updated_at
-        # )
-        # SELECT
-        #   UUID(),
-        #   v2_discussion_posts.iteration_id,
-        #   discussions.id, <<< HOW DO WE GET THIS??
-        #   v2_discussion_posts.user_id
-        #   0, 0, 0, 'cli',
-        #   TRUE, TRUE
-        #   '', '', NOW(), NOW()
-        # FROM v2_discussion_posts
-        # SQL
+        # TODO: This currently doesn't cope if there are more than one
+        # set of mentor discussions for the same solution.
+        #
+        # The solution I want to take is to copy all the posts to
+        # each discussion. It's not ideal but it's the only sane way.
+        #
+        # So the following steps need to be taken:
+        # 1. Remove any mentor discussions where there are no
+        #    posts by that mentor (ie where they joined then left)
+        # 2. Add an idx flag to discussions, and populate with an
+        #    incrementing number for each discussion on the same solution.
+        # 3. For each idx in the db (1..n), do the pass below but have
+        #    the idx as a join condition.
+        # x. Remove the idx flag from discussions
+
+        # Create a v3 solution_mentor_discussion_post
+        # for each v2 discussion_post
+        ActiveRecord::Base.connection.execute(<<-SQL)
+        INSERT INTO solution_mentor_discussion_posts (
+          uuid,
+          iteration_id,
+          discussion_id,
+          user_id,
+          content_markdown, content_html,
+          seen_by_student, seen_by_mentor,
+          created_at, updated_at
+        )
+        SELECT
+          UUID(),
+          v2_discussion_posts.iteration_id,
+          solution_mentor_discussions.id,
+          v2_discussion_posts.user_id,
+          v2_discussion_posts.content, v2_discussion_posts.html,
+          TRUE, TRUE,
+          NOW(), NOW()
+        FROM v2_discussion_posts
+        INNER JOIN iterations#{' '}
+          ON v2_discussion_posts.iteration_id = iterations.id
+        INNER JOIN solution_mentor_discussions#{' '}
+          ON iterations.solution_id = solution_mentor_discussions.solution_id
+        SQL
       end
     end
   end

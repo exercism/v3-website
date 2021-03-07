@@ -1,28 +1,15 @@
 module V2ETL
   module TableMigrations
     class TableMigration
-      def add_column(*args)
-        connection.add_column table_name, *args
-      end
-
-      def add_index(*args)
-        connection.add_index table_name, *args
-      end
-
-      def remove_column(*args)
-        connection.remove_column table_name, *args
-      end
-
-      def rename_column(*args)
-        connection.rename_column table_name, *args
-      end
-
-      def change_column_null(*args)
-        connection.change_column_null table_name, *args
-      end
-
-      def add_foreign_key(*args)
-        connection.add_foreign_key table_name, *args
+      %i[
+        rename_table
+        add_column remove_column rename_column change_column_null
+        add_foreign_key remove_foreign_key
+        add_index remove_index
+      ].each do |meth|
+        define_method(meth) do |*args|
+          connection.send(meth, table_name, *args)
+        end
       end
 
       def add_non_nullable_column(name, type, default = nil, args = {})

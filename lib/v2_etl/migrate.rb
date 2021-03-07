@@ -32,16 +32,20 @@ module V2ETL
       # Move submissions sideways. These tables are too
       # different to migrate so need data moving between them
       # rather than just having columns changed.
+      rename_table :discussion_posts, :v2_discussion_posts
+
+      # TODO: Work out what to do with these three.
       rename_table :submissions, :v2_submissions
       rename_table :submission_test_runs, :v2_submission_test_runs
       rename_table :notifications, :v2_notifications
-      rename_table :discussion_posts, :v2_discussion_posts
 
       # Remove duplicate foreign key on sideways table
       execute("ALTER TABLE v2_submission_test_runs DROP FOREIGN KEY fk_rails_477e62a0ba")
 
       # Rename tables
       rename_table :solution_mentorships, :solution_mentor_discussions
+      rename_table :iteration_files, :submission_files
+      rename_table :profiles, :user_profiles
     end
 
     def create_tables!
@@ -75,14 +79,14 @@ module V2ETL
 
     # Make any structural changes to the tables
     def migrate_tables!
-      migrate_solution_mentor_discussions
-
-      migrate_exercises
       migrate_friendly_id_slugs
+      migrate_solution_mentor_discussions
+      migrate_exercises
       migrate_iterations
-      migrate_solutions
+      migrate_submission_files
       migrate_tracks
-      migrate_iteration_files_to_submission_files
+
+      migrate_solutions
       migrate_user_profiles
       migrate_user_track_mentorships
       migrate_user_tracks
@@ -150,8 +154,6 @@ module V2ETL
     end
 
     def migrate_solutions; end
-
-    def migrate_iteration_files_to_submission_files; end
 
     def migrate_user_profiles; end
 
