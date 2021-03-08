@@ -24,6 +24,7 @@ module V2ETL
         # Add missing columns
         add_column :github_username, :string
         add_column :became_mentor_at, :datetime
+        add_column :reputation, :integer, default: 0, null: false
 
         # Add indexes
         add_index %w[provider uid], unique: true

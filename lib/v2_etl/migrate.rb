@@ -46,6 +46,7 @@ module V2ETL
       rename_table :solution_mentorships, :solution_mentor_discussions
       rename_table :iteration_files, :submission_files
       rename_table :profiles, :user_profiles
+      rename_table :track_mentorships, :user_track_mentorships
     end
 
     def create_tables!
@@ -85,11 +86,10 @@ module V2ETL
       migrate_iterations
       migrate_submission_files
       migrate_tracks
-
-      migrate_solutions
       migrate_user_profiles
       migrate_user_track_mentorships
       migrate_user_tracks
+      migrate_solutions
       migrate_users
     end
 
@@ -148,18 +148,6 @@ module V2ETL
     def migrate_friendly_id_slugs
       # Noop
     end
-
-    def migrate_discussion_posts_to_solution_mentor_discussion_posts
-      # TODO: Rename table from discussion_posts to solution_mentor_discussion_posts
-    end
-
-    def migrate_solutions; end
-
-    def migrate_user_profiles; end
-
-    def migrate_user_track_mentorships; end
-
-    def migrate_user_tracks; end
 
     private
     delegate :rename_table, :execute, to: :connection
