@@ -125,6 +125,7 @@ module V2ETL
     end
 
     def handle_create(meth)
+      Rails.logger.info "Running #{meth}"
       file = Dir[Rails.root.join("db/migrate/*_#{meth}.rb")].first
       require file
 
@@ -132,6 +133,7 @@ module V2ETL
     end
 
     def handle_migrate(meth)
+      Rails.logger.info "Running #{meth}"
       file = Dir[Rails.root.join("lib/v2_etl/table_migrations/#{meth}.rb")].first
       require file
 
@@ -139,6 +141,7 @@ module V2ETL
     end
 
     def handle_process(meth)
+      Rails.logger.info "Running #{meth}"
       file = Dir[Rails.root.join("lib/v2_etl/data_processors/#{meth}.rb")].first
       require file
 
