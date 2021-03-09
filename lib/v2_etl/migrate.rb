@@ -8,6 +8,9 @@ module V2ETL
     def call
       return if Rails.env.production?
 
+      # Disable foreign key checks for speed
+      ActiveRecord::Base.connection.execute("SET FOREIGN_KEY_CHECKS=0")
+
       # The calls to reload in this method fix issues
       # with ActiveRecord caching the state of db tables.
       pre_create_tables!
@@ -23,6 +26,9 @@ module V2ETL
       reload!
 
       migrate_data!
+
+      # Reenable foreign key checks for integrity
+      ActiveRecord::Base.connection.execute("SET FOREIGN_KEY_CHECKS=1")
 
       # Final reload for anything that might come after, such as tests
       reload!
