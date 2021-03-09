@@ -44,6 +44,8 @@ module V2ETL
         # TODO: Migrate mentoring_requested_at to mentoring_request and set mentoring_status
         add_column :mentoring_status, :integer, limit: 1, default: 0, null: false
         remove_column :mentoring_requested_at
+
+        # TODO: Remove all solutions that are not downloaded or submitted
       end
     end
   end
