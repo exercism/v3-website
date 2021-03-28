@@ -20,3 +20,6 @@ rails c
 require_relative Rails.root.join('lib/v2_etl/migrate')
 V2ETL::Migrate.call
 ```
+
+3. Fix up Nim
+4. Rename reasonml (https://github.com/exercism/reasonml/pull/135)
