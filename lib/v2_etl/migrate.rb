@@ -49,7 +49,7 @@ module V2ETL
       execute("ALTER TABLE v2_submission_test_runs DROP FOREIGN KEY fk_rails_477e62a0ba")
 
       # Rename tables
-      rename_table :solution_mentorships, :solution_mentor_discussions
+      rename_table :solution_mentorships, :mentor_discussions
       rename_table :iteration_files, :submission_files
       rename_table :profiles, :user_profiles
       rename_table :track_mentorships, :user_track_mentorships
@@ -69,7 +69,7 @@ module V2ETL
       create_exercise_representations
       create_submission_representations
 
-      create_solution_mentor_requests
+      create_mentor_requests
 
       create_badges
       create_bug_reports
@@ -87,7 +87,7 @@ module V2ETL
     # Make any structural changes to the tables
     def migrate_tables!
       migrate_friendly_id_slugs
-      migrate_solution_mentor_discussions
+      migrate_mentor_discussions
       migrate_exercises
       migrate_iterations
       migrate_submission_files
@@ -103,14 +103,14 @@ module V2ETL
       # Some tables need creating after the migrations have occurred
       # in order for foreign keys to be there.
       create_mentor_testimonials
-      create_solution_mentor_discussion_posts
+      create_mentor_discussion_posts
     end
 
     def migrate_data!
       # Now do lots of data migrations
       # Each of these should have a class associated with
       # it and an equivlent test class
-      process_solution_mentor_discussion_posts
+      process_mentor_discussion_posts
 
       # TODO: Populate users.github_usernames via GH API
 

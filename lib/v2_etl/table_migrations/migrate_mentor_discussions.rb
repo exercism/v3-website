@@ -2,15 +2,15 @@ require_relative "table_migration"
 
 module V2ETL
   module TableMigrations
-    class MigrateSolutionMentorDiscussions < TableMigration
+    class MigrateMentorDiscussions < TableMigration
       include Mandate
 
       def table_name
-        "solution_mentor_discussions"
+        "mentor_discussions"
       end
 
       def model
-        Solution::MentorDiscussion
+        Mentor::Discussion
       end
 
       def call
@@ -45,7 +45,7 @@ module V2ETL
         # Create request_id
         # TODO: Do we want to create mentor_requests for existing discussions?
         add_column :request_id, :bigint, null: true
-        add_foreign_key :solution_mentor_requests, column: :request_id
+        add_foreign_key :mentor_requests, column: :request_id
       end
     end
   end

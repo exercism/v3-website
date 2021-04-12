@@ -1,6 +1,6 @@
 module V2ETL
   module DataProcessors
-    class ProcessSolutionMentorDiscussionPosts
+    class ProcessMentorDiscussionPosts
       include Mandate
 
       def call
@@ -19,10 +19,10 @@ module V2ETL
         #    the idx as a join condition.
         # x. Remove the idx flag from discussions
 
-        # Create a v3 solution_mentor_discussion_post
+        # Create a v3 mentor_discussion_post
         # for each v2 discussion_post
         ActiveRecord::Base.connection.execute(<<-SQL)
-        INSERT INTO solution_mentor_discussion_posts (
+        INSERT INTO mentor_discussion_posts (
           uuid,
           iteration_id,
           discussion_id,
@@ -34,16 +34,16 @@ module V2ETL
         SELECT
           UUID(),
           v2_discussion_posts.iteration_id,
-          solution_mentor_discussions.id,
+          mentor_discussions.id,
           v2_discussion_posts.user_id,
           v2_discussion_posts.content, v2_discussion_posts.html,
           TRUE, TRUE,
           NOW(), NOW()
         FROM v2_discussion_posts
-        INNER JOIN iterations#{' '}
+        INNER JOIN iterations
           ON v2_discussion_posts.iteration_id = iterations.id
-        INNER JOIN solution_mentor_discussions#{' '}
-          ON iterations.solution_id = solution_mentor_discussions.solution_id
+        INNER JOIN mentor_discussions
+          ON iterations.solution_id = mentor_discussions.solution_id
         SQL
       end
     end
