@@ -23,6 +23,9 @@ module V2ETL
 
         # TODO: Check this is honoured before putting ETL on .lol
         rename_column :anonymous, :anonymous_during_mentoring
+
+        add_column :summary_key, :string, null: true
+        add_column :summary_data, :json, null: true
       end
     end
   end
