@@ -34,6 +34,8 @@ module V2ETL
         add_non_nullable_column :blurb, :string, "''", limit: 400
         add_non_nullable_column :synced_to_git_sha, :string, "''"
         add_column :tags, :json
+        add_column :num_exercises, :integer, limit: 3, default: 0, null: false
+        add_column :num_concepts, :integer, limit: 3, default: 0, null: false
 
         add_index :slug, unique: true
       end

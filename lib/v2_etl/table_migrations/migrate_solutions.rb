@@ -41,9 +41,15 @@ module V2ETL
         # TODO: Move this to solution_mentorship?
         # reminder_sent_at
 
+        add_column :status, :tinyint, default: 0, null: false
+
         # TODO: Migrate mentoring_requested_at to mentoring_request and set mentoring_status
         add_column :mentoring_status, :integer, limit: 1, default: 0, null: false
         remove_column :mentoring_requested_at
+
+        add_column :snippet, :string, limit: 1500
+
+        add_column :num_iterations, :tinyint, default: 0, null: false
 
         # TODO: Remove all solutions that are not downloaded or submitted
       end

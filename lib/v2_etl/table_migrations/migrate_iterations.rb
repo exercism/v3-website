@@ -39,6 +39,8 @@ module V2ETL
 
         # TODO: Set to true if it's the final iteration
         add_column :published, :boolean, default: false
+
+        add_column :snippet, :string, limit: 1500
       end
     end
   end

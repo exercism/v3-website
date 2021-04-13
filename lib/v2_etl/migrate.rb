@@ -62,6 +62,7 @@ module V2ETL
       create_user_track_learnt_concepts
       create_exercise_prerequisites
       create_exercise_taught_concepts
+      create_exercise_practiced_concepts
       create_submissions
       create_submission_test_runs
       create_submission_analyses
@@ -82,6 +83,11 @@ module V2ETL
       create_user_activities
       create_user_auth_tokens
       create_user_reputation_tokens
+
+      create_github_pull_requests
+      create_github_organization_members
+
+      create_documents
     end
 
     # Make any structural changes to the tables
@@ -111,6 +117,7 @@ module V2ETL
       # Each of these should have a class associated with
       # it and an equivlent test class
       process_mentor_discussion_posts
+      process_solutions
 
       # TODO: Populate users.github_usernames via GH API
 

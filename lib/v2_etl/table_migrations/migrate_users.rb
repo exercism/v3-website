@@ -26,6 +26,8 @@ module V2ETL
         add_column :became_mentor_at, :datetime
         add_column :reputation, :integer, default: 0, null: false
 
+        add_column :roles, :json, null: true
+
         # Add indexes
         add_index %w[provider uid], unique: true
 
