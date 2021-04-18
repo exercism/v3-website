@@ -24,8 +24,6 @@ module V2ETL
         remove_column :auto_approve
         remove_column :length
         remove_column :unlocked_by_id
-
-        # TOOD: What is this and do we definitely not want it?
         remove_column :description
 
         # TODO: When we support WIP etc this will probably change

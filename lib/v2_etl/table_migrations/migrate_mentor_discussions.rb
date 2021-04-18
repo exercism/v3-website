@@ -39,11 +39,24 @@ module V2ETL
         # TODO: Migrate rating to the new system
 
         # TODO: Migrate feedback to testimonials
+        Mentor::Discussion.where.not(feedback: nil).
+          where.not(feedback: "").
+          includes(:solution).find_each do |discussion|
+          Mentor::Testimonial.create!(
+            mentor_id: discussion.user_id,
+            discussion: discussion,
+            student_id: discussion.solution.user_id,
+            content: "feedback",
+            revealed: true,
+            created_at: discussion.updated_at,
+            updated_at: discussion.updated_at
+          )
+        end
+        remove_column :feedback
 
         # TOOD: Decide about mentor_reminder_sent_at
 
         # Create request_id
-        # TODO: Do we want to create mentor_requests for existing discussions?
         add_column :request_id, :bigint, null: true
         add_foreign_key :mentor_requests, column: :request_id
       end

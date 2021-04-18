@@ -18,7 +18,9 @@ module V2ETL
         # in v2 vs v3. Check and update this comment. If not, does it matter?
         rename_column :file_contents_digest, :digest
 
-        # TODO: Add addition to s3+efs of all existing submission_files
+        # TODO: Upload to s3+efs of all existing submission_files
+        # then set this as part of that. This should probably be a load
+        # of ActiveJobs specifically for this.
         add_non_nullable_column :uri, :string, "'TODO'"
 
         # TOOD: We're leaving file_contents here atm, but

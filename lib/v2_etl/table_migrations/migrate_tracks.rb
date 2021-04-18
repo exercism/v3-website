@@ -14,8 +14,7 @@ module V2ETL
       end
 
       def call
-        # TODO: Do we want this. What are we doing instead?
-        # TODO: Are there actually 2 of these in production?
+        # TODO: Add columns for editor_language and highlightjs_language
         remove_column :syntax_highligher_language
         remove_column :syntax_highlighter_language
 

@@ -42,9 +42,10 @@ module V2ETL
         # reminder_sent_at
 
         add_column :status, :tinyint, default: 0, null: false
-
-        # TODO: Migrate mentoring_requested_at to mentoring_request and set mentoring_status
+        add_column :iteration_status, :string, null: true
         add_column :mentoring_status, :integer, limit: 1, default: 0, null: false
+
+        # TODO: Migrate solutions.mentoring_requested_at to mentoring_request
         remove_column :mentoring_requested_at
 
         add_column :snippet, :string, limit: 1500

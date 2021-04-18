@@ -37,6 +37,20 @@ module V2ETL
         # TODO: Calculate idx
         add_non_nullable_column :idx, :integer, "1", limit: 1
 
+        # https://stackoverflow.com/questions/45494/mysql-error-1093-cant-specify-target-table-for-update-in-from-clause
+        ActiveRecord::Base.connection.execute("SET optimizer_switch = 'derived_merge=off'")
+        Iteration.in_batches do |relation|
+          relation.update_all("idx = (
+            SELECT * FROM (
+              SELECT COUNT(*) + 1
+              FROM iterations inner_its
+              WHERE inner_its.solution_id = iterations.solution_id
+              AND inner_its.id < iterations.id
+            ) as x)
+          ")
+        end
+        ActiveRecord::Base.connection.execute("SET optimizer_switch = 'derived_merge=on'")
+
         # TODO: Set to true if it's the final iteration
         add_column :published, :boolean, default: false
 
