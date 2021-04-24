@@ -52,7 +52,9 @@ module V2ETL
 
         add_column :num_iterations, :tinyint, default: 0, null: false
 
-        # TODO: Remove all solutions that are not downloaded or submitted
+        # We're deliberately using delete_all here to ensure
+        # there are no foreign keys that are upset
+        Solution.where.not(id: Iteration.select(:solution_id)).where(downloaded_at: nil).delete_all
       end
     end
   end

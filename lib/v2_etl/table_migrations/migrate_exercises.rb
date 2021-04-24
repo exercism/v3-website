@@ -14,7 +14,6 @@ module V2ETL
       end
 
       def call
-        # TODO: We need to set these elsewhere
         remove_column :dark_icon_url
         remove_column :turquoise_icon_url
         remove_column :white_icon_url

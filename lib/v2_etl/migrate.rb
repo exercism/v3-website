@@ -8,6 +8,10 @@ module V2ETL
     def call
       return if Rails.env.production?
 
+      `mysql -u root -e "drop database small_website_etl"`
+      `mysql -u root -e "create database small_website_etl"`
+      `mysql -u root website_etl < small-dump-for-v3-etl.sql`
+
       # Disable foreign key checks for speed
       ActiveRecord::Base.connection.execute("SET FOREIGN_KEY_CHECKS=0")
 
@@ -31,6 +35,7 @@ module V2ETL
       ActiveRecord::Base.connection.execute("SET FOREIGN_KEY_CHECKS=1")
 
       # Final reload for anything that might come after, such as tests
+      update_schema_migrations!
       reload!
     end
 
@@ -71,6 +76,7 @@ module V2ETL
       create_submission_representations
 
       create_mentor_requests
+      create_mentor_testimonials
 
       create_badges
       create_bug_reports
@@ -108,7 +114,6 @@ module V2ETL
     def post_migrate_tables!
       # Some tables need creating after the migrations have occurred
       # in order for foreign keys to be there.
-      create_mentor_testimonials
       create_mentor_discussion_posts
     end
 
@@ -163,6 +168,13 @@ module V2ETL
 
     def migrate_friendly_id_slugs
       # Noop
+    end
+
+    def update_schema_migrations!
+      Dir[Rails.root.join("db", "migrate", "*.rb")].each do |migration|
+        id = migration.split("/").last.split("_").first
+        connection.execute("INSERT INTO schema_migrations VALUES ('#{id}')")
+      end
     end
 
     private

@@ -6,8 +6,8 @@ module V2ETL
       def call
         Solution.find_each do |solution|
           solution.update!(
-            status: solution.determine_status,
-            mentoring_status: solution.determine_mentoring_status,
+            status: solution.send(:determine_status),
+            mentoring_status: solution.send(:determine_mentoring_status),
             iteration_status: solution.iterations.last&.status.to_s
           )
         end

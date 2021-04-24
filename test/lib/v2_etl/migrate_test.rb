@@ -1,3 +1,6 @@
+# Run with:
+# rake db:migrate:reset; rails test test/lib/v2_etl/migrate_test.rb
+
 require "test_helper"
 require_relative '../../../lib/v2_etl/migrate'
 

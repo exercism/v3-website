@@ -8,21 +8,25 @@ module V2ETL
         add_index remove_index
       ].each do |meth|
         define_method(meth) do |*args|
+          puts "#{meth} #{table_name} #{args}" # rubocop:disable Rails/Output
           connection.send(meth, table_name, *args)
         end
       end
 
       def add_non_nullable_column(name, type, default = nil, args = {})
+        puts "add_non_nullable_column #{table_name} #{name}" # rubocop:disable Rails/Output
+
         add_column name, type, args.merge(null: true)
         if block_given?
           transaction do
             model.find_each do |record|
-              record.update!(yield)
+              record.update_column(name, yield(record))
             end
           end
         else
           model.update_all("#{name} = #{default}")
         end
+
         change_column_null name, false
       end
 

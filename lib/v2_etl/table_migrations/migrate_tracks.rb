@@ -14,11 +14,9 @@ module V2ETL
       end
 
       def call
-        # TODO: Add columns for editor_language and highlightjs_language
         remove_column :syntax_highligher_language
         remove_column :syntax_highlighter_language
 
-        # TODO: These need replacing with some icons
         remove_column :bordered_green_icon_url
         remove_column :bordered_turquoise_icon_url
         remove_column :hex_green_icon_url
@@ -37,6 +35,8 @@ module V2ETL
         add_column :num_concepts, :integer, limit: 3, default: 0, null: false
 
         add_index :slug, unique: true
+
+        Track.find_each { |track| Git::SyncTrack.(track) }
       end
     end
   end

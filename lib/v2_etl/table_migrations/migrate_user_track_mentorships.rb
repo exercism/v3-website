@@ -21,8 +21,6 @@ module V2ETL
         # We'll read these now from a profile if someone has one.
         remove_column :link_text
         remove_column :link_url
-
-        # TODO: Do we leave bio here or move it somewhere else?
       end
     end
   end

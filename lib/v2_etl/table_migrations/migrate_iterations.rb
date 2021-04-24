@@ -34,7 +34,7 @@ module V2ETL
           SecureRandom.compact_uuid
         end
 
-        # TODO: Calculate idx
+        # Set correct idx for all solutions
         add_non_nullable_column :idx, :integer, "1", limit: 1
 
         # https://stackoverflow.com/questions/45494/mysql-error-1093-cant-specify-target-table-for-update-in-from-clause

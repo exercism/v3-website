@@ -23,30 +23,24 @@ module V2ETL
         # Other adds
         add_column :requires_student_action_since, :datetime
 
-        # Removes
+        # Remove unused
         remove_column :show_feedback_to_mentor
 
         # Renames
         rename_column :user_id, :mentor_id
-        rename_column :requires_action_since, :requires_mentor_action_since
+        rename_column :requires_action_since, :awaiting_mentor_since
+        remove_column :requires_action
+        add_column :awaiting_student_since, :datetime
 
-        # Migrate abandoned to finished
-        # TODO: Is there a state here we want too?
-        add_column :finished_at, :datetime
-        model.where(abandoned: true).update_all("finished_at = NOW()")
-        remove_column :abandoned
-
-        # TODO: Migrate rating to the new system
-
-        # TODO: Migrate feedback to testimonials
-        Mentor::Discussion.where.not(feedback: nil).
+        discussions_with_feedback = Mentor::Discussion.where.not(feedback: nil).
           where.not(feedback: "").
-          includes(:solution).find_each do |discussion|
+          includes(:solution)
+        discussions_with_feedback.find_each do |discussion|
           Mentor::Testimonial.create!(
-            mentor_id: discussion.user_id,
+            mentor_id: discussion.mentor_id,
             discussion: discussion,
             student_id: discussion.solution.user_id,
-            content: "feedback",
+            content: discussion.feedback,
             revealed: true,
             created_at: discussion.updated_at,
             updated_at: discussion.updated_at
@@ -59,6 +53,30 @@ module V2ETL
         # Create request_id
         add_column :request_id, :bigint, null: true
         add_foreign_key :mentor_requests, column: :request_id
+
+        migrate_statuses!
+      end
+
+      def migrate_statuses!
+        # Add columns
+        add_column :status, :tinyint, null: false, default: 0
+        add_column :mentor_finished_at, :datetime
+        add_column :student_finished_at, :datetime
+
+        # Mark Approved as completed
+        approved_solutions = Solution.where.not(approved_by_id: nil)
+        Mentor::Discussion.where(solution: approved_solutions).update_all(status: :both_finished)
+
+        # Mark abandoned as completed
+        model.where(abandoned: true).update_all(status: :both_finished)
+
+        # TODO: Use variable for times
+        Mentor::Discussion.where(status: :both_finished).update_all(
+          mentor_finished_at: Time.current
+        )
+
+        # Remove unnneeded columns
+        remove_column :abandoned
       end
     end
   end
