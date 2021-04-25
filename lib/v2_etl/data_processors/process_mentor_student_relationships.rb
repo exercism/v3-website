@@ -1,6 +1,6 @@
 module V2ETL
   module DataProcessors
-    class ProcessMentorDiscussionPosts
+    class ProcessMentorStudentRelationships
       include Mandate
 
       def call
@@ -22,29 +22,18 @@ module V2ETL
         # Create a v3 mentor_discussion_post
         # for each v2 discussion_post
         ActiveRecord::Base.connection.execute(<<-SQL)
-        INSERT INTO mentor_discussion_posts (
-          uuid,
-          iteration_id,
-          discussion_id,
-          user_id,
-          content_markdown, content_html,
-          seen_by_student, seen_by_mentor,
+        INSERT INTO mentor_student_relationships (
+          mentor_id,
+          student_id,
+          num_discussions,
           created_at, updated_at
         )
         SELECT
-          UUID(),
-          v2_discussion_posts.iteration_id,
-          mentor_discussions.id,
-          v2_discussion_posts.user_id,
-          v2_discussion_posts.content, v2_discussion_posts.html,
-          TRUE, TRUE,
+          mentor_id, solutions.user_id, COUNT(*),
           NOW(), NOW()
-        FROM v2_discussion_posts
-        INNER JOIN iterations
-          ON v2_discussion_posts.iteration_id = iterations.id
-        INNER JOIN mentor_discussions
-          ON iterations.solution_id = mentor_discussions.solution_id
-        WHERE v2_discussion_posts.user_id IS NOT NULL
+        FROM mentor_discussions
+        INNER JOIN solutions on solutions.id = mentor_discussions.solution_id
+        GROUP BY mentor_id, solutions.user_id
         SQL
       end
     end

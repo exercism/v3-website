@@ -35,7 +35,10 @@ module V2ETL
         add_non_nullable_column :git_sha, :string, "''"
         add_non_nullable_column :synced_to_git_sha, :string, "''"
 
-        add_index :uuid, unique: true
+        # TODO: Run this at the end of the fix script for this
+        # Then switch these out
+        # add_index :uuid, unique: true
+        add_index %i[track_id uuid], unique: true
       end
     end
   end

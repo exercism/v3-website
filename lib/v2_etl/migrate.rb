@@ -8,34 +8,33 @@ module V2ETL
     def call
       return if Rails.env.production?
 
-      `mysql -u root -e "drop database small_website_etl"`
-      `mysql -u root -e "create database small_website_etl"`
-      `mysql -u root small_website_etl < small-dump-for-v3-etl.sql`
+      # `mysql -u root -e "drop database small_website_etl"`
+      # `mysql -u root -e "create database small_website_etl"`
+      # `mysql -u root small_website_etl < small-dump-for-v3-etl.sql`
 
       # Disable foreign key checks for speed
       ActiveRecord::Base.connection.execute("SET FOREIGN_KEY_CHECKS=0")
 
       # The calls to reload in this method fix issues
       # with ActiveRecord caching the state of db tables.
-      pre_create_tables!
-      reload!
+      # pre_create_tables!
+      # reload!
 
-      create_tables!
-      reload!
+      # create_tables!
+      # reload!
 
-      migrate_tables!
-      reload!
-
-      post_migrate_tables!
-      reload!
+      #       migrate_tables!
+      #       reload!
 
       migrate_data!
+
+      # Bring the schema migrations table up to daet
+      update_schema_migrations!
 
       # Reenable foreign key checks for integrity
       ActiveRecord::Base.connection.execute("SET FOREIGN_KEY_CHECKS=1")
 
       # Final reload for anything that might come after, such as tests
-      update_schema_migrations!
       reload!
     end
 
@@ -51,7 +50,12 @@ module V2ETL
       rename_table :notifications, :v2_notifications
 
       # Remove duplicate foreign key on sideways table
-      execute("ALTER TABLE v2_submission_test_runs DROP FOREIGN KEY fk_rails_477e62a0ba")
+      begin
+        execute("ALTER TABLE v2_submission_test_runs DROP FOREIGN KEY fk_rails_477e62a0ba")
+      rescue ActiveRecord::StatementInvalid
+        # It seems that the import/export of the db means that sometimes
+        # this doesn't appear.
+      end
 
       # Rename tables
       rename_table :solution_mentorships, :mentor_discussions
@@ -76,13 +80,14 @@ module V2ETL
       create_submission_representations
 
       create_mentor_requests
+      create_mentor_discussion_posts
       create_mentor_testimonials
+      create_mentor_student_relationships
 
       create_badges
       create_bug_reports
       create_exercise_authorships
       create_exercise_contributorships
-      create_mentor_student_relationships
       create_scratchpad_pages
       create_user_acquired_badges
       create_user_notifications
@@ -111,18 +116,14 @@ module V2ETL
       migrate_users
     end
 
-    def post_migrate_tables!
-      # Some tables need creating after the migrations have occurred
-      # in order for foreign keys to be there.
-      create_mentor_discussion_posts
-    end
-
     def migrate_data!
       # Now do lots of data migrations
       # Each of these should have a class associated with
       # it and an equivlent test class
-      process_mentor_discussion_posts
-      process_solutions
+      # process_tracks
+      # process_mentor_discussion_posts
+      process_mentor_student_relationships_posts
+      # process_solutions
 
       # TODO: Populate users.github_usernames via GH API
 

@@ -23,6 +23,8 @@ module V2ETL
 
         # Add missing columns
         add_column :github_username, :string
+        add_column :location, :string
+        add_column :pronouns, :string
         add_column :became_mentor_at, :datetime
         add_column :reputation, :integer, default: 0, null: false
 
@@ -30,6 +32,7 @@ module V2ETL
 
         # Add indexes
         add_index %w[provider uid], unique: true
+        add_index :github_username, unique: true
 
         # TODO: Move default_allow_comments to preferences
         # TODO: Migrate show_v3_patience_modal

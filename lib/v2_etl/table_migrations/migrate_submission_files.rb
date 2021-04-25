@@ -21,7 +21,7 @@ module V2ETL
         # TODO: Upload to s3+efs of all existing submission_files
         # then set this as part of that. This should probably be a load
         # of ActiveJobs specifically for this.
-        add_non_nullable_column :uri, :string, "'TODO'"
+        add_non_nullable_column :uri, :string, "''"
 
         # TOOD: We're leaving file_contents here atm, but
         # we either need to delete that at the end of this

@@ -14,6 +14,35 @@ module V2ETL
       end
 
       def call
+        # TODO: Do we still want this?
+        # num_reactions
+
+        # TODO: Add to v3
+        # reflection
+        # show_on_profile
+        # allow_comments
+        # num_comments
+        # num_stars
+
+        # TODO: Move this to solution_mentorship?
+        # reminder_sent_at
+
+        # Remove unnededed records before adding/deleting columns to speed things up.
+        #
+        # We're deliberately using delete_all here to ensure
+        # there are no foreign keys that are upset
+        Solution.where.not(id: Iteration.select(:solution_id)).
+          where(downloaded_at: nil).
+          delete_all
+
+        add_column :status, :tinyint, default: 0, null: false
+        add_column :iteration_status, :string, null: true
+        add_column :mentoring_status, :integer, limit: 1, default: 0, null: false
+
+        add_column :snippet, :string, limit: 1500
+
+        add_column :num_iterations, :tinyint, default: 0, null: false
+
         # Add missing columns
         add_non_nullable_column :type, :string, "'PracticeSolution'"
 
@@ -28,33 +57,8 @@ module V2ETL
         remove_column :paused
         remove_column :is_legacy
 
-        # TODO: Do we still want this?
-        # num_reactions
-
-        # TODO: Add to v3
-        # reflection
-        # show_on_profile
-        # allow_comments
-        # num_comments
-        # num_stars
-
-        # TODO: Move this to solution_mentorship?
-        # reminder_sent_at
-
-        add_column :status, :tinyint, default: 0, null: false
-        add_column :iteration_status, :string, null: true
-        add_column :mentoring_status, :integer, limit: 1, default: 0, null: false
-
         # TODO: Migrate solutions.mentoring_requested_at to mentoring_request
         remove_column :mentoring_requested_at
-
-        add_column :snippet, :string, limit: 1500
-
-        add_column :num_iterations, :tinyint, default: 0, null: false
-
-        # We're deliberately using delete_all here to ensure
-        # there are no foreign keys that are upset
-        Solution.where.not(id: Iteration.select(:solution_id)).where(downloaded_at: nil).delete_all
       end
     end
   end

@@ -15,9 +15,7 @@ module V2ETL
 
       def call
         # Add UUID
-        add_non_nullable_column :uuid, :string do
-          SecureRandom.compact_uuid
-        end
+        add_non_nullable_column :uuid, :string, "UUID()"
         add_index :uuid, unique: true
 
         # Other adds

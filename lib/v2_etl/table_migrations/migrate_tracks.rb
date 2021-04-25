@@ -35,8 +35,6 @@ module V2ETL
         add_column :num_concepts, :integer, limit: 3, default: 0, null: false
 
         add_index :slug, unique: true
-
-        Track.find_each { |track| Git::SyncTrack.(track) }
       end
     end
   end

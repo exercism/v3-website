@@ -14,9 +14,9 @@ module V2ETL
       end
 
       def add_non_nullable_column(name, type, default = nil, args = {})
-        puts "add_non_nullable_column #{table_name} #{name}" # rubocop:disable Rails/Output
-
         add_column name, type, args.merge(null: true)
+
+        puts "populate_column [:#{table_name}, :#{name}]" # rubocop:disable Rails/Output
         if block_given?
           transaction do
             model.find_each do |record|

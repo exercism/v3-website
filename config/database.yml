@@ -17,7 +17,7 @@ default: &default
 development:
   primary:
     <<: *default
-    database: small_website_etl
+    database: website_etl
 
 test:
   primary:

@@ -4,17 +4,15 @@ module V2ETL
       include Mandate
 
       def call
-        Solution.find_each do |solution|
-          solution.update!(
-            status: solution.send(:determine_status),
-            mentoring_status: solution.send(:determine_mentoring_status),
-            iteration_status: solution.iterations.last&.status.to_s
-          )
-        end
+        Solution.where(status: 0).where.not(published_at: nil).update_all(status: :published)
+        Solution.where(status: 0).where.not(completed_at: nil).update_all(status: :published)
+        Solution.where(status: 0).where(id: Iteration.select(:solution_id)).update_all(status: :iterated)
 
-        Solution.where(status: :started).
-          where(downloaded_at: nil).
-          destroy_all
+        Solution.where(mentoring_status: 0).where(id: Mentor::Discussion.where.not(status: %i[student_finished
+                                                                                              both_finished]).select(:solution_id)).update_all(mentoring_status: :in_progress)
+        Solution.where(mentoring_status: 0).where(id: Mentor::Discussion.where(status: %i[student_finished
+                                                                                          both_finished]).select(:solution_id)).update_all(mentoring_status: :finished)
+        Solution.where(mentoring_status: 0).where(id: Mentor::Request.select(:solution_id)).update_all(mentoring_status: :requested)
       end
     end
   end
