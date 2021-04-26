@@ -117,32 +117,8 @@ ActiveRecord::Schema.define(version: 2021_03_24_111409) do
     t.string "type", null: false
     t.string "slug", null: false
     t.string "title", null: false
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     t.string "blurb", limit: 350
     t.integer "difficulty", limit: 1, default: 1, null: false
-=======
-    t.boolean "deprecated", default: true, null: false
-=======
-    t.boolean "core", default: false, null: false
-    t.boolean "active", default: true, null: false
-    t.boolean "auto_approve", default: false, null: false
->>>>>>> aab978e8 (Get things working end-to-end)
-    t.text "blurb"
-    t.text "description"
-    t.integer "difficulty", default: 1, null: false
-    t.integer "length", default: 1, null: false
-    t.integer "position"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "median_wait_time"
-<<<<<<< HEAD
-    t.string "type", null: false
->>>>>>> 21929105 (Continue ETL work)
-=======
-    t.string "blurb", limit: 350
->>>>>>> 4cafc210 (Update things)
     t.string "git_sha", null: false
     t.string "synced_to_git_sha", null: false
     t.integer "position", null: false
@@ -389,10 +365,6 @@ ActiveRecord::Schema.define(version: 2021_03_24_111409) do
   create_table "submissions", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "solution_id", null: false
     t.string "uuid", null: false
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4cafc210 (Update things)
     t.integer "tests_status", default: 0, null: false
     t.integer "representation_status", default: 0, null: false
     t.integer "analysis_status", default: 0, null: false
@@ -402,16 +374,6 @@ ActiveRecord::Schema.define(version: 2021_03_24_111409) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["solution_id"], name: "index_submissions_on_solution_id"
-<<<<<<< HEAD
-=======
-    t.json "filenames", null: false
-    t.string "solution_type", null: false
-    t.index %w[solution_id id], name: "index_submissions_on_solution_id_and_id"
-    t.index %w[solution_type solution_id], name: "index_submissions_on_solution_type_and_solution_id"
-    t.index %w[tested id], name: "index_submissions_on_tested_and_id"
->>>>>>> aab978e8 (Get things working end-to-end)
-=======
->>>>>>> 4cafc210 (Update things)
     t.index ["uuid"], name: "index_submissions_on_uuid", unique: true
   end
 

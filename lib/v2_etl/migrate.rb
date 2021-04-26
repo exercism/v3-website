@@ -8,23 +8,23 @@ module V2ETL
     def call
       return if Rails.env.production?
 
-      # `mysql -u root -e "drop database small_website_etl"`
-      # `mysql -u root -e "create database small_website_etl"`
-      # `mysql -u root small_website_etl < small-dump-for-v3-etl.sql`
+      `mysql -u root -e "drop database small_website_etl"`
+      `mysql -u root -e "create database small_website_etl"`
+      `mysql -u root small_website_etl < small-dump-for-v3-etl.sql`
 
       # Disable foreign key checks for speed
       ActiveRecord::Base.connection.execute("SET FOREIGN_KEY_CHECKS=0")
 
       # The calls to reload in this method fix issues
       # with ActiveRecord caching the state of db tables.
-      # pre_create_tables!
-      # reload!
+      pre_create_tables!
+      reload!
 
-      # create_tables!
-      # reload!
+      create_tables!
+      reload!
 
-      #       migrate_tables!
-      #       reload!
+      migrate_tables!
+      reload!
 
       migrate_data!
 
@@ -120,10 +120,17 @@ module V2ETL
       # Now do lots of data migrations
       # Each of these should have a class associated with
       # it and an equivlent test class
-      # process_tracks
-      # process_mentor_discussion_posts
-      process_mentor_student_relationships_posts
-      # process_solutions
+      process_mentor_discussion_posts
+      process_mentor_requests
+      process_mentor_student_relationships
+
+      # This needs to come after the mentor migrations as
+      # it uses their values to determine status
+      process_solutions
+
+      # This is worth doing last as it's the least likely to fail
+      # and the least damanging if it does.
+      process_tracks
 
       # TODO: Populate users.github_usernames via GH API
 
@@ -175,6 +182,8 @@ module V2ETL
       Dir[Rails.root.join("db", "migrate", "*.rb")].each do |migration|
         id = migration.split("/").last.split("_").first
         connection.execute("INSERT INTO schema_migrations VALUES ('#{id}')")
+      rescue
+        # Rescue in case a matching migration id already exists
       end
     end
 

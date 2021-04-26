@@ -58,19 +58,19 @@ module V2ETL
       def migrate_statuses!
         # Add columns
         add_column :status, :tinyint, null: false, default: 0
-        add_column :mentor_finished_at, :datetime
-        add_column :student_finished_at, :datetime
+        add_column :finished_at, :datetime
+        add_column :finished_by, :tinyint
 
         # Mark Approved as completed
         approved_solutions = Solution.where.not(approved_by_id: nil)
-        Mentor::Discussion.where(solution: approved_solutions).update_all(status: :both_finished)
+        Mentor::Discussion.where(solution: approved_solutions).update_all(status: :finished)
 
         # Mark abandoned as completed
-        model.where(abandoned: true).update_all(status: :both_finished)
+        model.where(abandoned: true).update_all(status: :finished)
 
         # TODO: Use variable for times
-        Mentor::Discussion.where(status: :both_finished).update_all(
-          mentor_finished_at: Time.current
+        Mentor::Discussion.where(status: :finished).update_all(
+          finished_at: Time.current
         )
 
         # Remove unnneeded columns

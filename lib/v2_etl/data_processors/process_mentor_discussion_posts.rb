@@ -38,7 +38,7 @@ module V2ETL
           v2_discussion_posts.user_id,
           v2_discussion_posts.content, v2_discussion_posts.html,
           TRUE, TRUE,
-          NOW(), NOW()
+          v2_discussion_posts.created_at, v2_discussion_posts.updated_at
         FROM v2_discussion_posts
         INNER JOIN iterations
           ON v2_discussion_posts.iteration_id = iterations.id

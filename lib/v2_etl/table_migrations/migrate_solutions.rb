@@ -47,7 +47,6 @@ module V2ETL
         add_non_nullable_column :type, :string, "'PracticeSolution'"
 
         # Remove redundant columns
-        remove_column :approved_by_id
         remove_column :last_updated_by_user_at
         remove_column :last_updated_by_mentor_at
         remove_column :num_mentors
@@ -56,9 +55,6 @@ module V2ETL
         remove_column :track_in_independent_mode
         remove_column :paused
         remove_column :is_legacy
-
-        # TODO: Migrate solutions.mentoring_requested_at to mentoring_request
-        remove_column :mentoring_requested_at
       end
     end
   end
