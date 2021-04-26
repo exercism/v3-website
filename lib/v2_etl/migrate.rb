@@ -85,7 +85,7 @@ module V2ETL
       create_mentor_student_relationships
 
       create_badges
-      create_bug_reports
+      create_problem_reports
       create_exercise_authorships
       create_exercise_contributorships
       create_scratchpad_pages

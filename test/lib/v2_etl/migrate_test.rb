@@ -2,7 +2,7 @@
 # rake db:migrate:reset; rails test test/lib/v2_etl/migrate_test.rb
 
 require "test_helper"
-require_relative '../../../lib/v2_etl/migrate'
+# require_relative '../../../lib/v2_etl/migrate'
 
 # Some times this gets into a mess. In that situation it's best to drop
 # the exercism_v3_test database entirely and recreate it (see README)
