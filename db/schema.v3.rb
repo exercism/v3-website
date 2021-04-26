@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_210_324_111_409) do
+ActiveRecord::Schema.define(version: 20_210_426_125_026) do
   create_table "badges", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "type", null: false
     t.string "name", null: false
@@ -21,15 +21,6 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_badges_on_name", unique: true
     t.index ["type"], name: "index_badges_on_type", unique: true
-  end
-
-  create_table "bug_reports", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.text "content_markdown", null: false
-    t.text "content_html", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_bug_reports_on_user_id"
   end
 
   create_table "documents", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -132,6 +123,7 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.boolean "deprecated", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "difficulty", limit: 1, default: 1, null: false
     t.index %w[track_id uuid], name: "index_exercises_on_track_id_and_uuid", unique: true
     t.index ["track_id"], name: "index_exercises_on_track_id"
     t.index ["uuid"], name: "index_exercises_on_uuid"
@@ -214,11 +206,14 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.bigint "solution_id", null: false
     t.bigint "mentor_id", null: false
     t.bigint "request_id"
-    t.datetime "requires_mentor_action_since"
-    t.datetime "requires_student_action_since"
+    t.integer "status", limit: 1, default: 0, null: false
+    t.datetime "awaiting_student_since"
+    t.datetime "awaiting_mentor_since"
     t.datetime "finished_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "finished_by", limit: 1
+    t.integer "rating", limit: 1
     t.index ["mentor_id"], name: "index_mentor_discussions_on_mentor_id"
     t.index ["request_id"], name: "index_mentor_discussions_on_request_id"
     t.index ["solution_id"], name: "index_mentor_discussions_on_solution_id"
@@ -242,10 +237,11 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.bigint "mentor_id", null: false
     t.bigint "student_id", null: false
     t.boolean "favorited", default: false, null: false
-    t.boolean "blocked", default: false, null: false
+    t.boolean "blocked_by_mentor", default: false, null: false
     t.integer "num_discussions", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "blocked_by_student", default: false, null: false
     t.index %w[mentor_id student_id], name: "index_mentor_student_relationships_on_mentor_id_and_student_id", unique: true
     t.index ["mentor_id"], name: "index_mentor_student_relationships_on_mentor_id"
     t.index ["student_id"], name: "index_mentor_student_relationships_on_student_id"
@@ -255,7 +251,9 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.bigint "mentor_id", null: false
     t.bigint "student_id", null: false
     t.bigint "discussion_id", null: false
+    t.string "uuid", null: false
     t.text "content", null: false
+    t.boolean "revealed", default: false, null: false
     t.boolean "published", default: true, null: false
     t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false
@@ -263,6 +261,24 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.index ["discussion_id"], name: "index_mentor_testimonials_on_discussion_id", unique: true
     t.index ["mentor_id"], name: "index_mentor_testimonials_on_mentor_id"
     t.index ["student_id"], name: "index_mentor_testimonials_on_student_id"
+    t.index ["uuid"], name: "index_mentor_testimonials_on_uuid"
+  end
+
+  create_table "problem_reports", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "content_markdown", null: false
+    t.text "content_html", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "type", limit: 1, default: 0, null: false
+    t.bigint "track_id"
+    t.bigint "exercise_id"
+    t.string "about_type"
+    t.bigint "about_id"
+    t.index %w[about_type about_id], name: "index_problem_reports_on_about"
+    t.index ["exercise_id"], name: "index_problem_reports_on_exercise_id"
+    t.index ["track_id"], name: "index_problem_reports_on_track_id"
+    t.index ["user_id"], name: "index_problem_reports_on_user_id"
   end
 
   create_table "scratchpad_pages", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -285,8 +301,10 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.string "git_slug", null: false
     t.string "git_sha", null: false
     t.integer "status", limit: 1, default: 0, null: false
+    t.string "iteration_status"
     t.datetime "last_submitted_at"
     t.integer "num_iterations", limit: 1, default: 0, null: false
+    t.string "snippet", limit: 1500
     t.datetime "downloaded_at"
     t.datetime "completed_at"
     t.datetime "published_at"
@@ -356,6 +374,7 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["solution_id"], name: "index_submissions_on_solution_id"
+    t.index ["uuid"], name: "index_submissions_on_uuid", unique: true
   end
 
   create_table "track_concepts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -363,7 +382,7 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.string "slug", null: false
     t.string "uuid", null: false
     t.string "name", null: false
-    t.string "blurb", limit: 350, default: ""
+    t.string "blurb", limit: 350
     t.string "synced_to_git_sha", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -461,6 +480,7 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.string "medium"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_user_profiles_on_user_id", unique: true
   end
 
   create_table "user_reputation_tokens", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -553,7 +573,6 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "bug_reports", "users"
   add_foreign_key "documents", "tracks"
   add_foreign_key "exercise_authorships", "exercises"
   add_foreign_key "exercise_authorships", "users"
@@ -586,6 +605,7 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
   add_foreign_key "mentor_testimonials", "mentor_discussions", column: "discussion_id"
   add_foreign_key "mentor_testimonials", "users", column: "mentor_id"
   add_foreign_key "mentor_testimonials", "users", column: "student_id"
+  add_foreign_key "problem_reports", "users"
   add_foreign_key "scratchpad_pages", "users"
   add_foreign_key "solutions", "exercises"
   add_foreign_key "solutions", "users"
@@ -605,6 +625,7 @@ ActiveRecord::Schema.define(version: 20_210_324_111_409) do
   add_foreign_key "user_notifications", "exercises"
   add_foreign_key "user_notifications", "tracks"
   add_foreign_key "user_notifications", "users"
+  add_foreign_key "user_profiles", "users"
   add_foreign_key "user_reputation_tokens", "exercises"
   add_foreign_key "user_reputation_tokens", "tracks"
   add_foreign_key "user_reputation_tokens", "users"
