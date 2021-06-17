@@ -42,7 +42,7 @@ class Track < ApplicationRecord
   end
 
   def repo
-    "exercism/#{git.repo_name}"
+    "exercism/#{slug}"
   end
 
   def course?
