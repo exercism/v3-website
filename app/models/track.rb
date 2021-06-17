@@ -41,6 +41,10 @@ class Track < ApplicationRecord
     Git::Track.new(synced_to_git_sha, repo_url: repo_url)
   end
 
+  def repo
+    "exercism/#{git.repo_name}"
+  end
+
   def course?
     git.has_concept_exercises?
   end
