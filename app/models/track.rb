@@ -41,7 +41,7 @@ class Track < ApplicationRecord
     Git::Track.new(synced_to_git_sha, repo_url: repo_url)
   end
 
-  def repo
+  def repo_name
     "exercism/#{slug}"
   end
 
