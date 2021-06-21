@@ -130,6 +130,7 @@
             & > pre {
                 width: 100%;
                 max-width: 450px;
+                overflow: hidden;
                 @apply flex-shrink-0 w-1-2 ml-72;
                 @apply bg-backgroundColorA rounded-8 py-24 px-36;
                 @apply shadow-base;
