@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 2021_07_06_061801) do
     t.bigint "contributor_team_id", null: false
     t.bigint "user_id", null: false
     t.boolean "visible", default: true, null: false
+    t.integer "status", limit: 1, default: 0, null: false
     t.integer "seniority", limit: 1, default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
