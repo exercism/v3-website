@@ -203,6 +203,7 @@ Rails.application.routes.draw do
   # ######## #
   namespace :webhooks do
     resource :issue_updates, only: [:create]
+    resource :membership_updates, only: [:create]
     resource :push_updates, only: [:create]
     resource :pull_request_updates, only: [:create]
     resource :organization_updates, only: [:create]
