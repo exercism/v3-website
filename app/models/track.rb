@@ -41,8 +41,9 @@ class Track < ApplicationRecord
     Git::Track.new(synced_to_git_sha, repo_url: repo_url)
   end
 
+  memoize
   def repo_name
-    "exercism/#{slug}"
+    slug
   end
 
   def course?
