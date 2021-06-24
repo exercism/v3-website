@@ -65,6 +65,15 @@ ActiveRecord::Schema.define(version: 2021_07_06_061801) do
     t.index ["user_id"], name: "index_contributor_team_memberships_on_user_id"
   end
 
+  create_table "contributor_team_repos", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "contributor_team_id", null: false
+    t.string "github_full_name", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["contributor_team_id", "github_full_name"], name: "index_contributor_team_repo_on_team_id_and_github_full_name", unique: true
+    t.index ["contributor_team_id"], name: "index_contributor_team_repos_on_contributor_team_id"
+  end
+
   create_table "contributor_teams", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "track_id"
     t.string "name", null: false
@@ -771,6 +780,7 @@ ActiveRecord::Schema.define(version: 2021_07_06_061801) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "contributor_team_memberships", "contributor_teams"
   add_foreign_key "contributor_team_memberships", "users"
+  add_foreign_key "contributor_team_repos", "contributor_teams"
   add_foreign_key "contributor_teams", "tracks"
   add_foreign_key "documents", "tracks"
   add_foreign_key "exercise_authorships", "exercises"
