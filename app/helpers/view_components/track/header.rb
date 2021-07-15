@@ -57,25 +57,28 @@ module ViewComponents
       end
 
       def tabs
-        [
-          link_to(
-            graphical_icon(:overview) + tag.span("Overview"),
-            Exercism::Routes.track_path(track),
-            class: tab_class(:overview)
-          ),
+        tabs = []
+        tabs << link_to(
+          graphical_icon(:overview) + tag.span("Overview"),
+          Exercism::Routes.track_path(track),
+          class: tab_class(:overview)
+        )
 
-          link_to(
+        unless user_track.practice_mode?
+          tabs << link_to(
             graphical_icon(:concepts) + tag.span("Syllabus"),
             Exercism::Routes.track_concepts_path(track),
             class: tab_class(:concepts)
-          ),
-
-          link_to(
-            graphical_icon(:exercises) + tag.span("Exercises"),
-            Exercism::Routes.track_exercises_path(track),
-            class: tab_class(:exercises)
           )
-        ]
+        end
+
+        tabs << link_to(
+          graphical_icon(:exercises) + tag.span("Exercises"),
+          Exercism::Routes.track_exercises_path(track),
+          class: tab_class(:exercises)
+        )
+
+        tabs
       end
 
       def tab_class(tab)
